@@ -1,0 +1,68 @@
+package handlers
+
+import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+	"time"
+
+	. "../helpers"
+	. "../models"
+)
+
+var productStore = make(map[string]Product)
+
+var id int = 0
+
+//HTTP post -/api/prouduct
+func PostProductHandler(w http.ResponseWriter, r *http.Response) {
+	var product Product
+	err := json.NewDecoder(r.Body).Decode(&product)
+	CheckError(err)
+	product.CreatedOn = time.Now()
+	id++
+	product.ID = id
+	key := strconv.Itoa(id)
+	productStore[key] = product
+
+	data, err := json.Marshal(product)
+	CheckError(err)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+
+	w.Write(data)
+
+}
+
+//HTTP get's -/api/prouduct
+func GetProductsHandler(w http.ResponseWriter, r *http.Response) {
+	var products []Product
+
+	for _, product := range productStore {
+		products = append(products, product)
+	}
+
+	data, err := json.Marshal(products)
+	CheckError(err)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	w.Write(data)
+}
+
+//HTTP get -/api/prouduct/{id}
+func GetProductHandler(w http.ResponseWriter, r *http.Response) {
+
+}
+
+//HTTP put -/api/prouduct/{id}
+func PutProductHandler(w http.ResponseWriter, r *http.Response) {
+
+}
+
+//HTTP delete -/api/prouduct/{id}
+func DeleteProductHandler(w http.ResponseWriter, r *http.Response) {
+
+}
